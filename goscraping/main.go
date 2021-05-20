@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
 
 	echo "github.com/labstack/echo/v4"
@@ -17,7 +20,17 @@ func main() {
 	e.Use(middleware.Recover())
 
 	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "init")
+
+		url := "https://www.f-marinos.com/"
+		resp, err := http.Get(url)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer resp.Body.Close()
+		byteArray, _ := ioutil.ReadAll(resp.Body)
+		fmt.Println(string(byteArray))
+
+		return c.HTML(http.StatusOK, string(byteArray))
 	})
 
 	e.Logger.Fatal(e.Start(":8080"))
