@@ -1,8 +1,6 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -60,15 +58,9 @@ func main() {
 				nameJp,
 				nameEn,
 			}
-
 			players = append(players, player)
-
-			fmt.Printf("Review %d: %s - %s - %s - %s - %s - %s\n", i, url, number, position, img, nameJp, nameEn)
 		})
-		jsonData, _ := json.Marshal(players)
-		fmt.Println(jsonData)
-
-		return c.JSON(http.StatusOK, string(jsonData))
+		return c.JSON(http.StatusOK, players)
 	})
 
 	e.Logger.Fatal(e.Start(":8080"))
