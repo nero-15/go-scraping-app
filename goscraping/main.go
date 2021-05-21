@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -10,13 +11,13 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-type player struct {
-	url      string
-	number   string
-	position string
-	img      string
-	nameJp   string
-	nameEn   string
+type Player struct {
+	Url      string `json:"url"`
+	Number   string `json:"number"`
+	Position string `json:"position"`
+	Img      string `json:"img"`
+	NameJp   string `json:"nameJp"`
+	NameEn   string `json:"nameEn"`
 }
 
 func main() {
@@ -42,7 +43,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		players := []player{}
+		players := []Player{}
 		doc.Find("a.card-player").Each(func(i int, s *goquery.Selection) {
 			url, _ := s.Attr("href")
 			number := s.Find(".card-player-number").Text()
@@ -51,7 +52,7 @@ func main() {
 			nameJp := s.Find(".card-player-name-jp").Text()
 			nameEn := s.Find(".card-player-name-en").Text()
 
-			player := player{
+			player := Player{
 				url,
 				number,
 				position,
@@ -64,8 +65,10 @@ func main() {
 
 			fmt.Printf("Review %d: %s - %s - %s - %s - %s - %s\n", i, url, number, position, img, nameJp, nameEn)
 		})
-		fmt.Println(players)
-		return c.String(http.StatusOK, "player")
+		jsonData, _ := json.Marshal(players)
+		fmt.Println(jsonData)
+
+		return c.JSON(http.StatusOK, string(jsonData))
 	})
 
 	e.Logger.Fatal(e.Start(":8080"))
