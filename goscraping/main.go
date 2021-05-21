@@ -10,6 +10,15 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
+type player struct {
+	url      string
+	number   string
+	position string
+	img      string
+	nameJp   string
+	nameEn   string
+}
+
 func main() {
 	e := echo.New()
 
@@ -33,6 +42,7 @@ func main() {
 			log.Fatal(err)
 		}
 
+		players := []player{}
 		doc.Find("a.card-player").Each(func(i int, s *goquery.Selection) {
 			url, _ := s.Attr("href")
 			number := s.Find(".card-player-number").Text()
@@ -41,8 +51,20 @@ func main() {
 			nameJp := s.Find(".card-player-name-jp").Text()
 			nameEn := s.Find(".card-player-name-en").Text()
 
+			player := player{
+				url,
+				number,
+				position,
+				img,
+				nameJp,
+				nameEn,
+			}
+
+			players = append(players, player)
+
 			fmt.Printf("Review %d: %s - %s - %s - %s - %s - %s\n", i, url, number, position, img, nameJp, nameEn)
 		})
+		fmt.Println(players)
 		return c.String(http.StatusOK, "player")
 	})
 
