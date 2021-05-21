@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -34,16 +33,17 @@ func main() {
 			log.Fatal(err)
 		}
 
-		doc.Find("a").Each(func(i int, s *goquery.Selection) {
+		doc.Find("a.card-player").Each(func(i int, s *goquery.Selection) {
 			href, _ := s.Attr("href")
 			number := s.Find(".card-player-number").Text()
-			fmt.Printf("Review %d: %s - %s\n", i, href, number)
+			position := s.Find(".card-player-position").Text()
+			img, _ := s.Find("img").Attr("src")
+			nameJp := s.Find(".card-player-name-jp").Text()
+			nameEn := s.Find(".card-player-name-en").Text()
+
+			fmt.Printf("Review %d: %s - %s - %s - %s - %s - %s\n", i, href, number, position, img, nameJp, nameEn)
 		})
-
-		byteArray, _ := ioutil.ReadAll(resp.Body)
-		fmt.Println(string(byteArray))
-
-		return c.HTML(http.StatusOK, string(byteArray))
+		return c.String(http.StatusOK, "player")
 	})
 
 	e.Logger.Fatal(e.Start(":8080"))
