@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/PuerkitoBio/goquery"
 	echo "github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -27,6 +28,18 @@ func main() {
 			log.Fatal(err)
 		}
 		defer resp.Body.Close()
+
+		doc, err := goquery.NewDocumentFromReader(resp.Body)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		doc.Find("a").Each(func(i int, s *goquery.Selection) {
+			href, _ := s.Attr("href")
+			number := s.Find(".card-player-number").Text()
+			fmt.Printf("Review %d: %s - %s\n", i, href, number)
+		})
+
 		byteArray, _ := ioutil.ReadAll(resp.Body)
 		fmt.Println(string(byteArray))
 
