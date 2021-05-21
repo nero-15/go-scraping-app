@@ -19,9 +19,9 @@ func main() {
 	}))
 	e.Use(middleware.Recover())
 
-	e.GET("/", func(c echo.Context) error {
+	e.GET("/player", func(c echo.Context) error { //選手・スタッフページから選手のデータを取得する
 
-		url := "https://www.f-marinos.com/"
+		url := "https://www.f-marinos.com/team/player"
 		resp, err := http.Get(url)
 		if err != nil {
 			log.Fatal(err)
