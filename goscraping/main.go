@@ -43,6 +43,13 @@ func main() {
 			log.Fatal(err)
 		}
 
+		// 取得したデータを保存するためにファイル作成
+		file, err := os.Create("./json/players.json")
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer file.Close()
+
 		players := []Player{}
 		doc.Find("a.card-player").Each(func(i int, s *goquery.Selection) {
 			url, _ := s.Attr("href")
@@ -61,23 +68,13 @@ func main() {
 				nameEn,
 			}
 			players = append(players, player)
-		})
 
-		// ファイルに取得したデータを保存する
-
-		file, err := os.Create("./json/players.json")
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer file.Close()
-
-		for _, player := range players {
 			p, _ := json.Marshal(player)
 			_, err = file.Write(p)
 			if err != nil {
 				log.Fatal(err)
 			}
-		}
+		})
 
 		return c.JSON(http.StatusOK, players)
 	})
