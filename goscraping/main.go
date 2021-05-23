@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/PuerkitoBio/goquery"
 	echo "github.com/labstack/echo/v4"
@@ -60,6 +62,23 @@ func main() {
 			}
 			players = append(players, player)
 		})
+
+		// ファイルに取得したデータを保存する
+
+		file, err := os.Create("./json/players.json")
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer file.Close()
+
+		for _, player := range players {
+			p, _ := json.Marshal(player)
+			_, err = file.Write(p)
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+
 		return c.JSON(http.StatusOK, players)
 	})
 
